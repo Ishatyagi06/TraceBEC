@@ -60,12 +60,12 @@ export interface ForensicReport {
     sender_metadata: Record<string, any>;
     spoofing_probability: number;
   };
-  module_3_origin: {
+  module_3_origin?: {
     origin_ip?: string;
-    routing_path: any[];
-    infrastructure_indicators: string[];
-    is_suspicious_origin: boolean;
-    transit_delay_anomaly: boolean;
+    routing_path?: any[];
+    infrastructure_indicators?: string[];
+    is_suspicious_origin?: boolean;
+    transit_delay_anomaly?: boolean;
   };
   module_4_reputation: {
     reputation_score: number;
@@ -208,12 +208,6 @@ export async function getCampaignGraph(campaignId: string = "camp_d5440b4df3ff",
 export async function getCampaignsList(): Promise<any> {
   const res = await fetch(`${API_BASE_URL}/campaigns/list`);
   if (!res.ok) throw new Error("Failed to load campaigns list");
-  return res.json();
-}
-
-export async function getOriginMapTrace(ip: string = "185.220.101.45"): Promise<any> {
-  const res = await fetch(`${API_BASE_URL}/origin-map/trace?ip=${encodeURIComponent(ip)}`);
-  if (!res.ok) throw new Error("Failed to load origin trace map data");
   return res.json();
 }
 

@@ -91,13 +91,3 @@ def test_campaigns_graph_endpoint():
     assert data["metrics"]["campaign_candidate"] == 22
     assert data["selected_campaign"]["id"] == "camp_d5440b4df3ff"
 
-
-def test_origin_map_trace_endpoint():
-    res = client.get("/api/v1/origin-map/trace?ip=185.220.101.45")
-    assert res.status_code == 200
-    data = res.json()
-    assert data["origin_ip"] == "185.220.101.45"
-    assert len(data["hops"]) == 3
-    assert data["origin_geo"]["country"] == "Netherlands"
-    assert data["origin_geo"]["is_tor"] is True
-

@@ -5,7 +5,6 @@ import {
   Search,
   Trash2,
   Network,
-  Globe,
   Database,
   Sliders,
   CheckCircle2,
@@ -28,11 +27,10 @@ import { DatasetProfilerView } from "./components/DatasetProfilerView";
 import { SettingsView } from "./components/SettingsView";
 import { TriageBadge } from "./components/TriageBadge";
 import { CampaignGraphExplorer } from "./components/CampaignGraphExplorer";
-import { OriginTraceabilityMapView } from "./components/OriginTraceabilityMapView";
 
 export function App() {
   // Primary focus is the main email investigation & triage dashboard
-  const [activeTab, setActiveTab] = useState<"investigation" | "campaigns" | "origin_map" | "profiler" | "settings">("investigation");
+  const [activeTab, setActiveTab] = useState<"investigation" | "campaigns" | "profiler" | "settings">("investigation");
   const [backendOnline, setBackendOnline] = useState<boolean>(true);
 
   // Investigation input state
@@ -45,9 +43,6 @@ export function App() {
   const [currentResult, setCurrentResult] = useState<InvestigationRecord | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [recentInvestigations, setRecentInvestigations] = useState<InvestigationRecord[]>([]);
-
-  // Origin map IP focus (when pivoting from an investigation)
-  const [mapPivotIp, setMapPivotIp] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("http://localhost:8000/health")
@@ -129,11 +124,6 @@ export function App() {
     loadInvestigations();
   };
 
-  const handlePivotToMap = (ip: string) => {
-    setMapPivotIp(ip);
-    setActiveTab("origin_map");
-  };
-
   return (
     <div className="app-container">
       {/* TraceBEC Enterprise Navbar */}
@@ -154,12 +144,6 @@ export function App() {
             onClick={() => setActiveTab("campaigns")}
           >
             <Network size={15} /> Campaign Correlation
-          </button>
-          <button
-            className={`nav-button ${activeTab === "origin_map" ? "active" : ""}`}
-            onClick={() => setActiveTab("origin_map")}
-          >
-            <Globe size={15} /> Origin Traceability
           </button>
           <button
             className={`nav-button ${activeTab === "profiler" ? "active" : ""}`}
@@ -227,7 +211,7 @@ export function App() {
               {analyzing && (
                 <div style={{ marginBottom: "12px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-                    {["Header Parse", "Auth Check", "NLP Engine", "Origin Trace", "Scoring"].map((stage, i) => (
+                    {["Header Parse", "Auth Check", "NLP Engine", "Threat Intel", "Scoring"].map((stage, i) => (
                       <div key={stage} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                         <div className="forensic-stage-dot active" style={{ animationDelay: `${i * 0.18}s` }} />
                         <span style={{ fontSize: "0.68rem", color: "var(--text-dim)", whiteSpace: "nowrap" }}>{stage}</span>
@@ -399,7 +383,6 @@ export function App() {
                 <EvidenceView
                   record={currentResult}
                   onDelete={handleDeleteRecord}
-                  onInspectInMap={handlePivotToMap}
                 />
               </div>
             ) : (
@@ -500,13 +483,10 @@ export function App() {
         {/* TAB 2: Campaign Graph Explorer */}
         {activeTab === "campaigns" && <CampaignGraphExplorer />}
 
-        {/* TAB 3: Origin Traceability Map */}
-        {activeTab === "origin_map" && <OriginTraceabilityMapView initialIp={mapPivotIp || undefined} />}
-
-        {/* TAB 4: Dataset Profiler */}
+        {/* TAB 3: Dataset Profiler */}
         {activeTab === "profiler" && <DatasetProfilerView />}
 
-        {/* TAB 5: Privacy & Settings */}
+        {/* TAB 4: Privacy & Settings */}
         {activeTab === "settings" && <SettingsView />}
       </main>
     </div>

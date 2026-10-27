@@ -9,7 +9,6 @@ import {
   Network,
   ChevronDown,
   ChevronUp,
-  MapPin,
   Clock,
   ArrowRight,
   Sparkles,
@@ -20,13 +19,11 @@ import {
 interface EvidenceViewProps {
   record: InvestigationRecord;
   onDelete?: (id: string) => void;
-  onInspectInMap?: (ip: string) => void;
 }
 
 export const EvidenceView: React.FC<EvidenceViewProps> = ({
   record,
   onDelete,
-  onInspectInMap,
 }) => {
   const { risk_assessment, subject, sender, source_type, id, forensic_report } = record;
   const [showTechnicalDetails, setShowTechnicalDetails] = useState<boolean>(false);
@@ -38,14 +35,12 @@ export const EvidenceView: React.FC<EvidenceViewProps> = ({
     return <span className={`severity-badge ${s}`}>{severity}</span>;
   };
 
-  const hasRelayHops = Boolean(
-    forensic_report?.module_3_origin?.routing_path &&
-    forensic_report.module_3_origin.routing_path.length > 0
-  );
+  const receivedHops = record.parsed_email?.received_hops || [];
+  const hasRelayHops = receivedHops.length > 0;
 
   const originatingIp =
-    forensic_report?.module_3_origin?.origin_ip ||
-    forensic_report?.detailed_report?.technical_indicators?.originating_ip;
+    forensic_report?.detailed_report?.technical_indicators?.originating_ip ||
+    record.parsed_email?.originating_ip;
 
   const handleCopySummary = () => {
     const text = `TraceBEC Investigation Report [ID: ${id}]
@@ -195,7 +190,7 @@ Interpretation: ${risk_assessment.score_interpretation}`;
                 />
               </div>
               <div style={{ fontSize: "0.74rem", color: "var(--text-muted)", marginTop: "6px" }}>
-                Synthesized across NLP, headers, origin, reputation, and campaign correlation.
+                Synthesized across NLP, headers, infrastructure reputation, and campaign correlation.
               </div>
             </div>
 
@@ -357,7 +352,7 @@ Interpretation: ${risk_assessment.score_interpretation}`;
         </div>
       </div>
 
-      {/* 3. Origin & Relay Trace (Secondary — Shown Only When Reliable Header Data Exists) */}
+      {/* 3. Network Relay Trajectory (RFC 5322 Headers) */}
       {hasRelayHops || originatingIp ? (
         <div className="card" style={{ backgroundColor: "rgba(15, 23, 42, 0.75)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
@@ -365,24 +360,15 @@ Interpretation: ${risk_assessment.score_interpretation}`;
               <Network size={18} color="var(--accent-teal-bright)" />
               <div>
                 <span style={{ fontWeight: 600, fontSize: "0.92rem", color: "var(--text-main)" }}>
-                  Network Relay Trajectory & Origin Trace
+                  Network Relay Trajectory
                 </span>
                 <span style={{ fontSize: "0.78rem", color: "var(--text-dim)", marginLeft: "10px" }}>
-                  {forensic_report?.module_3_origin?.routing_path.length || 0} hops isolated from RFC 5322 Received headers
+                  {receivedHops.length} hops isolated from RFC 5322 Received headers
                 </span>
               </div>
             </div>
 
             <div style={{ display: "flex", gap: "8px" }}>
-              {originatingIp && onInspectInMap && (
-                <button
-                  onClick={() => onInspectInMap(originatingIp)}
-                  className="btn btn-secondary"
-                  style={{ padding: "5px 10px", fontSize: "0.78rem" }}
-                >
-                  <MapPin size={12} /> Inspect Geo Route
-                </button>
-              )}
               <button
                 onClick={() => setShowRelayHops(!showRelayHops)}
                 className="btn btn-secondary"
@@ -394,26 +380,20 @@ Interpretation: ${risk_assessment.score_interpretation}`;
             </div>
           </div>
 
-          {/* Key Origin Callout */}
+          {/* Key Transit Callout */}
           <div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "12px", padding: "10px 14px", backgroundColor: "rgba(0,0,0,0.25)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-subtle)", flexWrap: "wrap" }}>
             <div>
-              <span style={{ fontSize: "0.72rem", color: "var(--text-dim)", textTransform: "uppercase" }}>Originating Client IP:</span>{" "}
+              <span style={{ fontSize: "0.72rem", color: "var(--text-dim)", textTransform: "uppercase" }}>Primary Transit IP:</span>{" "}
               <code style={{ color: "var(--accent-teal-bright)", fontWeight: 600 }}>{originatingIp || "Internal Relay"}</code>
             </div>
 
-            {forensic_report?.module_3_origin?.is_suspicious_origin && (
-              <span className="tag" style={{ backgroundColor: "rgba(244, 63, 94, 0.15)", color: "#FDA4AF", border: "1px solid rgba(244, 63, 94, 0.3)" }}>
-                Anonymizer / Tor Exit Node Match
-              </span>
-            )}
-
             <div style={{ fontSize: "0.75rem", color: "var(--text-dim)", marginLeft: "auto", fontStyle: "italic" }}>
-              Note: Anonymization (Tor/VPN) indicates routing obfuscation, not sole proof of malicious intent.
+              Parsed from authenticated MTA transport handshakes.
             </div>
           </div>
 
           {/* Expanded Hops Table */}
-          {showRelayHops && forensic_report?.module_3_origin?.routing_path && (
+          {showRelayHops && receivedHops.length > 0 && (
             <div style={{ marginTop: "14px", overflowX: "auto" }}>
               <table className="research-table">
                 <thead>
@@ -422,15 +402,14 @@ Interpretation: ${risk_assessment.score_interpretation}`;
                     <th>Receiving Host (By)</th>
                     <th>Sending Host (From)</th>
                     <th>Extracted IP</th>
-                    <th>Type</th>
                     <th>Transit Latency</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {forensic_report.module_3_origin.routing_path.map((hop: any, idx: number) => (
+                  {receivedHops.map((hop: any, idx: number) => (
                     <tr key={idx}>
                       <td style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--accent-teal-bright)", fontWeight: 600 }}>
-                        #{hop.hop}
+                        #{hop.hop_index ?? idx + 1}
                       </td>
                       <td style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.78rem", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {hop.by_host || "-"}
@@ -441,14 +420,9 @@ Interpretation: ${risk_assessment.score_interpretation}`;
                       <td style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.80rem" }}>
                         {hop.ip || "Unknown"}
                       </td>
-                      <td>
-                        <span className={`tag ${hop.is_public_ip ? "tag-teal" : "tag-muted"}`}>
-                          {hop.is_public_ip ? "Public WAN" : "RFC1918 Private"}
-                        </span>
-                      </td>
                       <td style={{ fontSize: "0.78rem", color: "var(--text-dim)" }}>
-                        {hop.delay_seconds !== null && hop.delay_seconds !== undefined
-                          ? `${Math.round(hop.delay_seconds)}s`
+                        {hop.delay_seconds_from_prev !== null && hop.delay_seconds_from_prev !== undefined
+                          ? `${Math.round(hop.delay_seconds_from_prev)}s`
                           : "Immediate"}
                       </td>
                     </tr>
@@ -463,7 +437,7 @@ Interpretation: ${risk_assessment.score_interpretation}`;
         <div style={{ padding: "10px 14px", backgroundColor: "rgba(255, 255, 255, 0.02)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-subtle)", fontSize: "0.78rem", color: "var(--text-dim)", display: "flex", alignItems: "center", gap: "8px" }}>
           <Clock size={14} color="var(--text-dim)" />
           <span>
-            Transport relay headers unavailable for visible text submission. Network origin and relay hops are omitted to avoid unverified inferences.
+            Transport relay headers unavailable for visible text submission.
           </span>
         </div>
       )}
@@ -528,7 +502,7 @@ Interpretation: ${risk_assessment.score_interpretation}`;
           {showTechnicalDetails && (
             <div style={{ marginTop: "10px", padding: "14px", backgroundColor: "var(--bg-inset)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-subtle)", fontSize: "0.78rem" }}>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "8px", fontFamily: "'JetBrains Mono', monospace" }}>
-                <div>Origin IP: <code style={{ color: "var(--accent-teal-bright)" }}>{originatingIp || "N/A"}</code></div>
+                <div>Sender IP: <code style={{ color: "var(--accent-teal-bright)" }}>{originatingIp || "N/A"}</code></div>
                 <div>Extracted URLs: <code>{forensic_report.detailed_report.technical_indicators?.extracted_urls_count ?? 0}</code></div>
                 <div>Relay Hops: <code>{forensic_report.detailed_report.technical_indicators?.hop_count ?? 0}</code></div>
                 <div>Model Version: <code>{risk_assessment.model_version}</code></div>

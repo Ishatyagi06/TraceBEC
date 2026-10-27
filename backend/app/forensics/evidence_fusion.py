@@ -19,7 +19,6 @@ from app.schemas.email_schema import (
     ParsedEmail,
     NLPModuleOutput,
     HeaderAuthModuleOutput,
-    OriginTraceabilityModuleOutput,
     InfrastructureReputationModuleOutput,
     CampaignCorrelationModuleOutput,
     KeyEvidenceItem,
@@ -28,38 +27,28 @@ from app.schemas.email_schema import (
 )
 from app.forensics.nlp_analyzer import analyze_nlp
 from app.forensics.header_analyzer import analyze_headers
-from app.forensics.origin_tracer import trace_origin
 from app.forensics.infrastructure_reputation import analyze_infrastructure_reputation
 from app.forensics.campaign_correlator import correlate_campaigns
 
 
-# Module Weight Matrix
-WEIGHT_NLP = 0.25
-WEIGHT_HEADERS = 0.25
-WEIGHT_ORIGIN = 0.15
+# Module Weight Matrix (Rebalanced across 4 core detection modules)
+WEIGHT_NLP = 0.30
+WEIGHT_HEADERS = 0.30
 WEIGHT_REPUTATION = 0.20
-WEIGHT_CAMPAIGN = 0.15
+WEIGHT_CAMPAIGN = 0.20
 
 
 def execute_forensic_pipeline(parsed: ParsedEmail) -> ForensicInvestigationReport:
-    """Executes all 5 evidence extraction modules in parallel and fuses results."""
-    # 1. Run the 5 Parallel Modules
+    """Executes evidence extraction modules in parallel and fuses results."""
+    # 1. Run Parallel Modules
     m1_nlp: NLPModuleOutput = analyze_nlp(parsed)
     m2_headers: HeaderAuthModuleOutput = analyze_headers(parsed)
-    m3_origin: OriginTraceabilityModuleOutput = trace_origin(parsed)
     m4_reputation: InfrastructureReputationModuleOutput = analyze_infrastructure_reputation(parsed)
     m5_campaign: CampaignCorrelationModuleOutput = correlate_campaigns(parsed)
 
     # 2. Derive normalized module scores [0.0, 1.0]
     score_m1 = m1_nlp.phishing_probability
     score_m2 = m2_headers.spoofing_probability
-    
-    score_m3 = 0.05
-    if m3_origin.is_suspicious_origin:
-        score_m3 = 0.85
-    elif m3_origin.transit_delay_anomaly:
-        score_m3 = 0.50
-
     score_m4 = m4_reputation.reputation_score
     score_m5 = m5_campaign.similarity_score
 
@@ -67,7 +56,6 @@ def execute_forensic_pipeline(parsed: ParsedEmail) -> ForensicInvestigationRepor
     raw_fused_score = (
         WEIGHT_NLP * score_m1 +
         WEIGHT_HEADERS * score_m2 +
-        WEIGHT_ORIGIN * score_m3 +
         WEIGHT_REPUTATION * score_m4 +
         WEIGHT_CAMPAIGN * score_m5
     )
@@ -118,15 +106,6 @@ def execute_forensic_pipeline(parsed: ParsedEmail) -> ForensicInvestigationRepor
             severity="High" if m2_headers.spoofing_probability >= 0.60 else "Warning"
         ))
 
-    # Module 3 Key Evidence
-    if m3_origin.is_suspicious_origin or m3_origin.transit_delay_anomaly:
-        reason = m3_origin.infrastructure_indicators[0] if m3_origin.infrastructure_indicators else "Routing anomaly"
-        key_evidence.append(KeyEvidenceItem(
-            module="Origin Traceability",
-            evidence_text=f"Anomalous transit origin: {reason}",
-            severity="High" if m3_origin.is_suspicious_origin else "Warning"
-        ))
-
     # Module 4 Key Evidence
     if m4_reputation.threat_intelligence_matches:
         key_evidence.append(KeyEvidenceItem(
@@ -162,19 +141,17 @@ def execute_forensic_pipeline(parsed: ParsedEmail) -> ForensicInvestigationRepor
         module_wise_analysis={
             "module_1_nlp_score": score_m1,
             "module_2_header_auth_score": score_m2,
-            "module_3_origin_traceability_score": score_m3,
             "module_4_infrastructure_reputation_score": score_m4,
             "module_5_campaign_correlation_score": score_m5,
             "weights": {
                 "nlp": WEIGHT_NLP,
                 "headers": WEIGHT_HEADERS,
-                "origin": WEIGHT_ORIGIN,
                 "reputation": WEIGHT_REPUTATION,
                 "campaign": WEIGHT_CAMPAIGN,
             }
         },
         technical_indicators={
-            "originating_ip": m3_origin.origin_ip,
+            "originating_ip": parsed.originating_ip,
             "sender_address": m2_headers.sender_metadata.get("from_address"),
             "authentication": m2_headers.authentication_results,
             "extracted_urls_count": len(parsed.extracted_urls or []),
@@ -185,8 +162,8 @@ def execute_forensic_pipeline(parsed: ParsedEmail) -> ForensicInvestigationRepor
         references_and_sources=[
             "RFC 5322 Internet Message Format & MIME RFC 2045",
             "NIST SP 800-177 Trustworthy Email Standard",
-            "phisGuard Historical Threat Campaign Database v1.0",
-            "VirusTotal & URLhaus Threat Feed Integration (Simulated Heuristic)"
+            "TraceBEC Historical Threat Campaign Database v1.0",
+            "Threat Intelligence Feed Integration (Simulated Heuristic)"
         ]
     )
 
@@ -198,7 +175,7 @@ def execute_forensic_pipeline(parsed: ParsedEmail) -> ForensicInvestigationRepor
         detailed_report=detailed_report,
         module_1_nlp=m1_nlp,
         module_2_headers=m2_headers,
-        module_3_origin=m3_origin,
+        module_3_origin=None,
         module_4_reputation=m4_reputation,
         module_5_campaign=m5_campaign
     )

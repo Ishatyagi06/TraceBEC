@@ -16,7 +16,6 @@ from app.api.v1.datasets import router as datasets_router
 from app.api.v1.experiments import router as experiments_router
 from app.api.v1.investigations import router as investigations_router
 from app.api.v1.campaigns import router as campaigns_router
-from app.api.v1.origin_map import router as origin_map_router
 
 
 app = FastAPI(
@@ -43,7 +42,6 @@ app.include_router(datasets_router, prefix=api_v1_prefix)
 app.include_router(experiments_router, prefix=api_v1_prefix)
 app.include_router(investigations_router, prefix=api_v1_prefix)
 app.include_router(campaigns_router, prefix=api_v1_prefix)
-app.include_router(origin_map_router, prefix=api_v1_prefix)
 
 
 @app.get("/")

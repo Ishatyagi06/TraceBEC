@@ -14,7 +14,6 @@ import pytest
 from app.forensics.parser import parse_eml_bytes, extract_urls_and_domains
 from app.forensics.nlp_analyzer import analyze_nlp
 from app.forensics.header_analyzer import analyze_headers
-from app.forensics.origin_tracer import trace_origin
 from app.forensics.infrastructure_reputation import analyze_infrastructure_reputation
 from app.forensics.campaign_correlator import correlate_campaigns
 from app.forensics.evidence_fusion import execute_forensic_pipeline
@@ -97,16 +96,6 @@ def test_module_2_header_auth_analysis():
     assert any("SPF" in a for a in header_out.header_anomalies)
     assert any("Reply-To" in a for a in header_out.header_anomalies)
     assert header_out.authentication_results["spf"] == "FAIL"
-
-
-def test_module_3_origin_traceability():
-    parsed = parse_eml_bytes(SAMPLE_PHISHING_EML)
-    origin_out = trace_origin(parsed)
-    
-    assert origin_out.origin_ip == "185.220.101.45"
-    assert origin_out.is_suspicious_origin is True
-    assert any("Tor" in ind or "Anonymizer" in ind for ind in origin_out.infrastructure_indicators)
-    assert len(origin_out.routing_path) == 2
 
 
 def test_module_4_infrastructure_reputation():

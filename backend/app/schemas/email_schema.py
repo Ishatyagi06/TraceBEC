@@ -230,7 +230,7 @@ class ForensicInvestigationReport(BaseModel):
     detailed_report: DetailedReport
     module_1_nlp: NLPModuleOutput
     module_2_headers: HeaderAuthModuleOutput
-    module_3_origin: OriginTraceabilityModuleOutput
+    module_3_origin: Optional[OriginTraceabilityModuleOutput] = None
     module_4_reputation: InfrastructureReputationModuleOutput
     module_5_campaign: CampaignCorrelationModuleOutput
 
