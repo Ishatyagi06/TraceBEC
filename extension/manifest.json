@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "phisGuard - BEC Forensic Triage",
+  "version": "1.0.0",
+  "description": "User-triggered BEC and digital email forensic triage for Gmail.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "phisGuard BEC Triage"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://mail.google.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

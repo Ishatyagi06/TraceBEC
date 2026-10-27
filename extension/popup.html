@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>phisGuard Triage</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #070B19;
+      color: #F1F5F9;
+      width: 360px;
+      padding: 16px;
+      font-size: 13px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #1E2D4A;
+      margin-bottom: 14px;
+    }
+    .brand { font-size: 14px; font-weight: 700; color: #38BDF8; letter-spacing: -0.01em; }
+    .badge-tier { font-size: 10px; background: rgba(56, 189, 248, 0.12); color: #38BDF8; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      background: #2563EB;
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #1D4ED8; }
+    .btn-link {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      margin-top: 10px;
+      border-radius: 6px;
+      background: #111C35;
+      color: #38BDF8;
+      border: 1px solid #1E2D4A;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+    }
+    .disclaimer {
+      font-size: 11px;
+      color: #94A3B8;
+      background: #0D1527;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #1E2D4A;
+      margin-top: 12px;
+      line-height: 1.4;
+    }
+    .result-card {
+      background: #0D1527;
+      border-radius: 8px;
+      border: 1px solid #1E2D4A;
+      padding: 12px;
+      margin-top: 14px;
+    }
+    .risk-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .risk-high { background: rgba(127, 29, 29, 0.4); color: #F87171; border: 1px solid #DC2626; }
+    .risk-review { background: rgba(120, 53, 15, 0.4); color: #FBBF24; border: 1px solid #D97706; }
+    .risk-low { background: rgba(6, 78, 59, 0.4); color: #34D399; border: 1px solid #059669; }
+    .signal-item { font-size: 11px; color: #CBD5E1; margin-top: 6px; padding-left: 8px; border-left: 2px solid #38BDF8; }
+    .unavail-item { font-size: 11px; color: #64748B; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">phisGuard Triage</div>
+    <div class="badge-tier">Tier 1: Visible Text</div>
+  </div>
+
+  <button id="analyze-btn" class="btn">Analyze Current Email</button>
+
+  <div class="disclaimer">
+    <strong>Privacy Notice:</strong> Analysis is triggered strictly by you. Only visible subject, sender, and text are inspected. Transport headers are unavailable from the standard view.
+  </div>
+
+  <div id="result-area" style="display: none;"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

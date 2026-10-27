@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 42" fill="none">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#6366F1" />
+      <stop offset="100%" stopColor="#14B8A6" />
+    </linearGradient>
+    <linearGradient id="traceLineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#818CF8" />
+      <stop offset="100%" stopColor="#2DD4BF" />
+    </linearGradient>
+  </defs>
+  <path d="M18 2L32 7.5V18.5C32 27.5 25.8 35.5 18 39.5C10.2 35.5 4 27.5 4 18.5V7.5L18 2Z" fill="#0B0F19" stroke="url(#shieldGrad)" stroke-width="2.5" stroke-linejoin="round" />
+  <path d="M10 14L18 20L26 14" stroke="url(#traceLineGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="10" cy="14" r="2.2" fill="#818CF8" />
+  <circle cx="26" cy="14" r="2.2" fill="#818CF8" />
+  <circle cx="18" cy="20" r="2.5" fill="#2DD4BF" />
+  <circle cx="18" cy="30" r="2.8" fill="#2DD4BF" />
+  <line x1="18" y1="20" x2="18" y2="30" stroke="url(#traceLineGrad)" stroke-width="1.8" />
+</svg>

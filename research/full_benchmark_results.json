@@ -1,0 +1,304 @@
+{
+  "benchmark_timestamp": "2026-10-23T16:49:12Z",
+  "host_environment": {
+    "os": "Windows",
+    "cpu_mode": true,
+    "python_version": "3.11.9"
+  },
+  "dataset_profile": {
+    "total_samples": 200,
+    "class_distribution": {
+      "0": 100,
+      "1": 100
+    },
+    "missing_field_analysis": {
+      "subject": {
+        "missing_count": 0,
+        "missing_pct": 0.0
+      },
+      "body": {
+        "missing_count": 0,
+        "missing_pct": 0.0
+      },
+      "from": {
+        "missing_count": 200,
+        "missing_pct": 100.0,
+        "note": "Column absent from dataset"
+      },
+      "date": {
+        "missing_count": 200,
+        "missing_pct": 100.0,
+        "note": "Column absent from dataset"
+      },
+      "received_hops": {
+        "missing_count": 200,
+        "missing_pct": 100.0,
+        "note": "Column absent from dataset"
+      },
+      "auth_results": {
+        "missing_count": 200,
+        "missing_pct": 100.0,
+        "note": "Column absent from dataset"
+      }
+    },
+    "length_distribution": {
+      "min_words": 28,
+      "max_words": 62,
+      "mean_words": 37.5,
+      "median_words": 33,
+      "p95_words": 53
+    },
+    "leakage_audit": {
+      "total_records": 200,
+      "exact_duplicates": 0,
+      "near_duplicates": 180,
+      "unique_clusters": 20,
+      "leakage_risk_rating": "HIGH"
+    },
+    "forensic_readiness": "TEXT_ONLY_RESTRICTED"
+  },
+  "experiments": [
+    {
+      "experiment_id": "E1_TFIDF_LogReg",
+      "model_name": "TF-IDF + Logistic Regression (Linguistic Baseline)",
+      "random_split": {
+        "split_type": "Random Split (Stratified K-Fold)",
+        "precision_mean": 1.0,
+        "recall_mean": 1.0,
+        "f1_mean": 1.0,
+        "roc_auc_mean": 1.0,
+        "pr_auc_mean": 1.0,
+        "brier_score_mean": 0.0102,
+        "avg_train_time_sec": 0.0835,
+        "avg_infer_latency_ms": 0.483,
+        "confusion_matrix": [
+          [
+            100,
+            0
+          ],
+          [
+            0,
+            100
+          ]
+        ]
+      },
+      "cluster_disjoint_split": {
+        "split_type": "Exploratory Cluster-Disjoint (Stratified Group K-Fold)",
+        "precision_mean": 1.0,
+        "recall_mean": 1.0,
+        "f1_mean": 1.0,
+        "roc_auc_mean": 1.0,
+        "pr_auc_mean": 1.0,
+        "brier_score_mean": 0.048,
+        "avg_train_time_sec": 0.0632,
+        "avg_infer_latency_ms": 0.342,
+        "confusion_matrix": [
+          [
+            100,
+            0
+          ],
+          [
+            0,
+            100
+          ]
+        ]
+      },
+      "leakage_delta_f1": 0.0,
+      "note": "Template leakage delta: F1 drops by 0.00% under cluster-disjoint holdout."
+    },
+    {
+      "experiment_id": "E2_DistilRoBERTa_NLP",
+      "model_name": "DistilRoBERTa (distilroberta-base) Text-Only Candidate",
+      "random_split": {
+        "split_type": "Random Split (Stratified K-Fold)",
+        "precision_mean": 1.0,
+        "recall_mean": 1.0,
+        "f1_mean": 1.0,
+        "roc_auc_mean": 1.0,
+        "pr_auc_mean": 1.0,
+        "brier_score_mean": 0.005,
+        "avg_train_time_sec": 0.0671,
+        "avg_infer_latency_ms": 0.059,
+        "confusion_matrix": [
+          [
+            100,
+            0
+          ],
+          [
+            0,
+            100
+          ]
+        ]
+      },
+      "cluster_disjoint_split": {
+        "split_type": "Exploratory Cluster-Disjoint (Stratified Group K-Fold)",
+        "precision_mean": 1.0,
+        "recall_mean": 1.0,
+        "f1_mean": 1.0,
+        "roc_auc_mean": 1.0,
+        "pr_auc_mean": 1.0,
+        "brier_score_mean": 0.0226,
+        "avg_train_time_sec": 0.0613,
+        "avg_infer_latency_ms": 0.036,
+        "confusion_matrix": [
+          [
+            100,
+            0
+          ],
+          [
+            0,
+            100
+          ]
+        ]
+      },
+      "leakage_delta_f1": 0.0,
+      "embedding_extraction_time_sec": 31.54,
+      "note": "Template leakage delta: F1 drops by 0.00% under cluster-disjoint holdout."
+    },
+    {
+      "experiment_id": "E3_Forensic_XGBoost",
+      "model_name": "Tabular Forensics + XGBoost (Digital Evidence Baseline)",
+      "random_split": {
+        "split_type": "Random Split (Stratified K-Fold)",
+        "precision_mean": 1.0,
+        "recall_mean": 1.0,
+        "f1_mean": 1.0,
+        "roc_auc_mean": 1.0,
+        "pr_auc_mean": 1.0,
+        "brier_score_mean": 0.0002,
+        "avg_train_time_sec": 0.0404,
+        "avg_infer_latency_ms": 0.048,
+        "confusion_matrix": [
+          [
+            100,
+            0
+          ],
+          [
+            0,
+            100
+          ]
+        ]
+      },
+      "cluster_disjoint_split": {
+        "split_type": "Exploratory Cluster-Disjoint (Stratified Group K-Fold)",
+        "precision_mean": 1.0,
+        "recall_mean": 1.0,
+        "f1_mean": 1.0,
+        "roc_auc_mean": 1.0,
+        "pr_auc_mean": 1.0,
+        "brier_score_mean": 0.0004,
+        "avg_train_time_sec": 0.0338,
+        "avg_infer_latency_ms": 0.032,
+        "confusion_matrix": [
+          [
+            100,
+            0
+          ],
+          [
+            0,
+            100
+          ]
+        ]
+      },
+      "leakage_delta_f1": 0.0,
+      "note": "Template leakage delta: F1 drops by 0.00% under cluster-disjoint holdout."
+    },
+    {
+      "experiment_id": "E4_Multimodal_Fusion",
+      "model_name": "Multimodal Fusion (DistilRoBERTa + Tabular Forensics + Calibrator)",
+      "random_split": {
+        "split_type": "Random Split (Stratified K-Fold)",
+        "precision_mean": 1.0,
+        "recall_mean": 1.0,
+        "f1_mean": 1.0,
+        "roc_auc_mean": 1.0,
+        "pr_auc_mean": 1.0,
+        "brier_score_mean": 0.0,
+        "ece_mean": 0.0017,
+        "avg_train_time_sec": 0.0272,
+        "avg_infer_latency_ms": 0.039,
+        "confusion_matrix": [
+          [
+            100,
+            0
+          ],
+          [
+            0,
+            100
+          ]
+        ]
+      },
+      "cluster_disjoint_split": {
+        "split_type": "Exploratory Cluster-Disjoint (Stratified Group K-Fold)",
+        "precision_mean": 1.0,
+        "recall_mean": 1.0,
+        "f1_mean": 1.0,
+        "roc_auc_mean": 1.0,
+        "pr_auc_mean": 1.0,
+        "brier_score_mean": 0.0,
+        "ece_mean": 0.0022,
+        "avg_train_time_sec": 0.0284,
+        "avg_infer_latency_ms": 0.042,
+        "confusion_matrix": [
+          [
+            100,
+            0
+          ],
+          [
+            0,
+            100
+          ]
+        ]
+      },
+      "leakage_delta_f1": 0.0,
+      "feature_extraction_time_sec": 26.18,
+      "note": "Template leakage delta: F1 drops by 0.00% under cluster-disjoint holdout."
+    }
+  ],
+  "comparative_analysis": {
+    "cluster_disjoint_ranking": [
+      {
+        "rank": 1,
+        "experiment_id": "E4_Multimodal_Fusion",
+        "model_name": "Multimodal Fusion (DistilRoBERTa + Tabular Forensics + Calibrator)",
+        "f1": 1.0,
+        "pr_auc": 1.0,
+        "brier_score": 0.0,
+        "infer_latency_ms": 0.042
+      },
+      {
+        "rank": 2,
+        "experiment_id": "E3_Forensic_XGBoost",
+        "model_name": "Tabular Forensics + XGBoost (Digital Evidence Baseline)",
+        "f1": 1.0,
+        "pr_auc": 1.0,
+        "brier_score": 0.0004,
+        "infer_latency_ms": 0.032
+      },
+      {
+        "rank": 3,
+        "experiment_id": "E2_DistilRoBERTa_NLP",
+        "model_name": "DistilRoBERTa (distilroberta-base) Text-Only Candidate",
+        "f1": 1.0,
+        "pr_auc": 1.0,
+        "brier_score": 0.0226,
+        "infer_latency_ms": 0.036
+      },
+      {
+        "rank": 4,
+        "experiment_id": "E1_TFIDF_LogReg",
+        "model_name": "TF-IDF + Logistic Regression (Linguistic Baseline)",
+        "f1": 1.0,
+        "pr_auc": 1.0,
+        "brier_score": 0.048,
+        "infer_latency_ms": 0.342
+      }
+    ],
+    "latency_profile_ms": {
+      "E1_TFIDF_LogReg": 0.342,
+      "E2_DistilRoBERTa_NLP": 0.036,
+      "E3_Forensic_XGBoost": 0.032,
+      "E4_Multimodal_Fusion": 0.042
+    }
+  }
+}

@@ -1,0 +1,24 @@
+# Core Backend & Validation
+fastapi>=0.110.0
+uvicorn>=0.28.0
+pydantic>=2.6.0
+python-multipart>=0.0.9
+
+# Data Processing & Parsing
+beautifulsoup4>=4.12.3
+numpy>=1.26.0
+pandas>=2.2.0
+
+# Traditional ML Baselines & Evaluation (M3)
+scikit-learn>=1.4.0
+xgboost>=2.0.0
+
+# Testing & Verification
+pytest>=8.0.0
+requests>=2.31.0
+
+# Transformer NLP & Multimodal Fusion (M4 & M5)
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.2.0
+transformers>=4.38.0
+
